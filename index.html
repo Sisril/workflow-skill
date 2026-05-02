@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Skill Builder — Dosen & Researcher</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #e2ddd6;
+    --border-strong: #c8c2b8;
+    --text: #1a1814;
+    --text-muted: #7a746a;
+    --text-faint: #b0aa9f;
+    --accent: #2d5a3d;
+    --accent-light: #eaf2ec;
+    --accent-mid: #4a8c5f;
+    --amber: #8c5a1a;
+    --amber-light: #fdf3e3;
+    --purple: #3d2d6b;
+    --purple-light: #eeeaf8;
+    --coral: #8c3020;
+    --coral-light: #fdecea;
+    --teal: #1a5c5a;
+    --teal-light: #e8f5f4;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 28px 16px;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .brand span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+
+  .tab:hover { background: var(--bg); color: var(--text); }
+
+  .tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .tab.t1.active { background: var(--accent); border-color: var(--accent); }
+  .tab.t2.active { background: var(--purple); border-color: var(--purple); }
+  .tab.t3.active { background: var(--amber); border-color: var(--amber); }
+  .tab.t4.active { background: var(--teal); border-color: var(--teal); }
+  .tab.t5.active { background: var(--coral); border-color: var(--coral); }
+  .tab.t6.active { background: #444; border-color: #444; }
+
+  .content {
+    padding: 24px 28px;
+    max-width: 860px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ---- WORKFLOW PANEL ---- */
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .section-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-body { flex: 1; }
+
+  .step-title {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+
+  .step-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .chip {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    margin: 4px 2px 0;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .skill-mini {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .skill-mini:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+
+  .skill-mini .cmd {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .skill-mini .desc {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .s1 .cmd { color: var(--accent); }
+  .s2 .cmd { color: var(--purple); }
+  .s3 .cmd { color: var(--amber); }
+  .s4 .cmd { color: var(--teal); }
+  .s5 .cmd { color: var(--coral); }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 6px;
+  }
+
+  .badge-green { background: var(--accent-light); color: var(--accent); }
+  .badge-warn { background: var(--amber-light); color: var(--amber); }
+
+  .tip-box {
+    background: var(--accent-light);
+    border: 1px solid #c3dcc9;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 16px;
+  }
+
+  .tip-box strong { font-weight: 500; }
+
+  /* ---- SKILL PANELS ---- */
+  .skill-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+
+  .skill-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+  }
+
+  .cmd-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 5px;
+    border: 1px solid;
+  }
+
+  .s1 .cmd-badge { background: var(--accent-light); color: var(--accent); border-color: #c3dcc9; }
+  .s2 .cmd-badge { background: var(--purple-light); color: var(--purple); border-color: #cdc6e8; }
+  .s3 .cmd-badge { background: var(--amber-light); color: var(--amber); border-color: #e8d0a8; }
+  .s4 .cmd-badge { background: var(--teal-light); color: var(--teal); border-color: #a8d4d2; }
+  .s5 .cmd-badge { background: var(--coral-light); color: var(--coral); border-color: #e8c0b8; }
+
+  .folder-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .folder-label code {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .how-to-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .how-to-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .copy-wrap { position: relative; }
+
+  .code-block {
+    background: #1a1814;
+    color: #e8e2d8;
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    padding: 16px 18px;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #b0a898;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .copy-btn.copied { background: #2d5a3d; color: #fff; border-color: #2d5a3d; }
+
+  .install-steps {
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .install-title {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .install-step {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .install-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .s1 .install-dot { background: var(--accent-light); color: var(--accent); }
+  .s2 .install-dot { background: var(--purple-light); color: var(--purple); }
+  .s3 .install-dot { background: var(--amber-light); color: var(--amber); }
+  .s4 .install-dot { background: var(--teal-light); color: var(--teal); }
+  .s5 .install-dot { background: var(--coral-light); color: var(--coral); }
+
+  .try-btn {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 7px;
+    border: 1px solid;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity .15s;
+  }
+
+  .try-btn:hover { opacity: .8; }
+
+  .s1 .try-btn { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .s2 .try-btn { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .s3 .try-btn { background: var(--amber); color: #fff; border-color: var(--amber); }
+  .s4 .try-btn { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .s5 .try-btn { background: var(--coral); color: #fff; border-color: var(--coral); }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+  @media (max-width: 600px) {
+    .header, .content { padding-left: 16px; padding-right: 16px; }
+    .skill-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="brand">Claude <span>Skill Builder</span></div>
+      <div class="subtitle">Dosen &amp; Researcher — 5 template siap pakai</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="show('workflow', this)">Workflow</button>
+    <button class="tab t1" onclick="show('s1', this)">/riset-jurnal</button>
+    <button class="tab t2" onclick="show('s2', this)">/laporan-analisis</button>
+    <button class="tab t3" onclick="show('s3', this)">/proposal</button>
+    <button class="tab t4" onclick="show('s4', this)">/presentasi-deck</button>
+    <button class="tab t5" onclick="show('s5', this)">/brief-cepat</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- WORKFLOW -->
+<div class="panel active" id="panel-workflow">
+  <div class="section-title">Cara membangun Skill pertamamu</div>
+  <div class="section-desc">Ikuti 5 langkah ini. Estimasi total: 30 menit.</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <div class="step-title">Pilih satu Skill untuk dimulai</div>
+      <div class="step-text">Pilih aktivitas yang paling sering kamu ulang. Mulai dari satu, sempurnakan, baru lanjut ke yang berikutnya.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <div class="step-title">Buka Claude Cowork + Opus 4.6 + Extended Thinking</div>
+      <div class="step-text">Pastikan folder risetmu sudah terhubung. Ketik prompt berikut:</div>
+      <div class="chip">Use the skill-creator to help me build a skill for [nama aktivitas].</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <div class="step-title">Jawab wawancara Claude dengan spesifik</div>
+      <div class="step-text">Contoh buruk: "saya buat laporan penelitian"<br>Contoh bagus: "saya buat laporan penelitian kuantitatif, selalu dimulai dengan latar belakang, menggunakan APA style, diakhiri implikasi praktis 3 poin."</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <div class="step-title">Jalankan evaluasi — jangan di-skip!</div>
+      <div class="step-text">Klik "View the eval results". Ini langkah paling penting. Kalau belum pas, minta Claude perbaiki dulu sebelum diinstal.</div>
+      <div class="chip">Save the skill folder and prepare it for installation.</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <div class="step-title">Install dan uji coba</div>
+      <div class="step-text">Settings → Capabilities → Skills → Upload. Buka chat baru, coba minimal 5 frasa berbeda untuk memastikan Skill aktif.</div>
+      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+        <span class="badge badge-green">Skill aktif = sukses</span>
+        <span class="badge badge-warn">Tidak aktif? Gunakan trik debug di bawah</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="step-title" style="margin-bottom:8px">Trik debug jika Skill tidak aktif</div>
+  <div class="step-text" style="margin-bottom:6px">Ketik ini di chat Claude:</div>
+  <div class="chip">When would you use the [nama-skill] skill?</div>
+  <div class="step-text" style="margin-top:8px">Claude akan mengutip deskripsinya — kamu langsung tahu bagian mana yang terlalu vague.</div>
+
+  <hr class="divider">
+
+  <div class="step-title" style="margin-bottom:8px">5 Skill yang perlu kamu bangun</div>
+  <div class="skill-grid">
+    <div class="skill-mini s1" onclick="show('s1', document.querySelectorAll('.tab')[1])">
+      <div class="cmd">/riset-jurnal</div>
+      <div class="desc">Artikel ilmiah siap submit</div>
+      <span class="badge badge-green">Prioritas tinggi</span>
+    </div>
+    <div class="skill-mini s2" onclick="show('s2', document.querySelectorAll('.tab')[2])">
+      <div class="cmd">/laporan-analisis</div>
+      <div class="desc">Laporan penelitian terstruktur</div>
+    </div>
+    <div class="skill-mini s3" onclick="show('s3', document.querySelectorAll('.tab')[3])">
+      <div class="cmd">/proposal</div>
+      <div class="desc">Proposal hibah &amp; penelitian</div>
+    </div>
+    <div class="skill-mini s4" onclick="show('s4', document.querySelectorAll('.tab')[4])">
+      <div class="cmd">/presentasi-deck</div>
+      <div class="desc">Slide konferensi &amp; kelas</div>
+    </div>
+    <div class="skill-mini s5" onclick="show('s5', document.querySelectorAll('.tab')[5])">
+      <div class="cmd">/brief-cepat</div>
+      <div class="desc">Rangkuman literatur cepat</div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>Alternatif lebih cepat:</strong> Pergi ke <strong>makemyskill.com</strong>, deskripsikan Skill kamu sepanjang mungkin, download hasilnya, lalu upload ke Claude Settings — tanpa proses wawancara.
+  </div>
+</div>
+
+<!-- SKILL 1 -->
+<div class="panel s1" id="panel-s1">
+  <div class="skill-header">
+    <div class="skill-title">Riset &amp; Artikel Jurnal</div>
+    <span class="cmd-badge">/riset-jurnal</span>
+    <span class="badge badge-green">Prioritas utama</span>
+  </div>
+  <div class="folder-label">Nama folder: <code>riset-jurnal</code> &nbsp;|&nbsp; File: <code>SKILL.md</code></div>
+
+  <div class="how-to-label">Cara pakai</div>
+  <div class="how-to-text">Copy seluruh teks di bawah → simpan sebagai <code>SKILL.md</code> di dalam folder bernama <code>riset-jurnal</code> → upload ke Settings → Skills.</div>
+
+  <div class="copy-wrap">
+    <pre class="code-block scrollbar-thin" id="code-s1"># Riset & Artikel Jurnal
+
+## Description
+Use this skill when the user wants to:
+- Write, draft, or structure a scientific/academic journal article
+- Conduct a literature review or systematic review
+- Develop a research framework or theoretical basis
+- Write abstract, introduction, methodology, results, discussion, or conclusion
+- Format references in APA, AMA, or IEEE style
+- Improve or edit an existing manuscript for journal submission
+- Find research gaps or formulate research questions
+
+Do NOT use for: blog posts, general summaries, presentations, proposals, or emails.
+
+## Trigger
+/riset-jurnal
+
+## Instructions
+
+### Peran kamu
+Kamu adalah research assistant akademik yang berpengalaman membantu
+dosen dan peneliti Indonesia menyusun artikel jurnal ilmiah berkualitas
+tinggi, baik untuk jurnal nasional (Sinta) maupun internasional (Scopus/WoS).
+
+### Alur kerja wajib
+1. Tanyakan: topik penelitian, disiplin ilmu, target jurnal (jika ada),
+   dan data/temuan yang sudah dimiliki.
+2. Bantu formulasikan research question yang tajam dan novelty yang jelas.
+3. Susun outline artikel sesuai format IMRAD (Introduction, Method,
+   Results, And Discussion) atau format target jurnal.
+4. Tulis setiap bagian dengan bahasa akademik yang tepat — formal,
+   presisi, bebas dari klaim berlebihan.
+5. Pastikan setiap klaim didukung sitasi yang relevan
+   (gunakan format APA 7th jika tidak disebutkan lain).
+6. Di bagian Discussion, selalu hubungkan temuan dengan literatur yang
+   ada dan jelaskan kontribusi teoritis.
+7. Akhiri dengan kesimpulan yang menjawab langsung research question,
+   bukan generalisasi.
+
+### Standar kualitas
+- Gunakan bahasa Indonesia baku dan ilmiah, atau bahasa Inggris akademik
+  jika diminta.
+- Hindari kalimat pasif berlebihan. Utamakan argumen yang logis.
+- Abstrak: 150–250 kata, mencakup tujuan, metode, hasil, dan implikasi.
+- Keywords: 4–6 kata kunci, pisahkan dengan titik koma.
+
+### Output default
+Draft lengkap bagian yang diminta, lalu tawari untuk lanjut ke bagian
+berikutnya.</pre>
+    <button class="copy-btn" onclick="copyCode('code-s1', this)">Copy</button>
+  </div>
+
+  <div class="install-steps">
+    <div class="install-title">Langkah instalasi</div>
+    <div class="install-step"><div class="install-dot">1</div><div>Copy kode di atas → buat file baru bernama <code>SKILL.md</code></div></div>
+    <div class="install-step"><div class="install-dot">2</div><div>Masukkan file ke dalam folder bernama <code>riset-jurnal</code></div></div>
+    <div class="install-step"><div class="install-dot">3</div><div>Di Claude: Settings → Capabilities → Skills → Upload folder</div></div>
+    <div class="install-step"><div class="install-dot">4</div><div>Uji dengan mengetik: <em>"Bantu saya menulis artikel jurnal tentang [topik]"</em></div></div>
+  </div>
+
+  <a class="try-btn" href="https://claude.ai" target="_blank">Buka Claude dan coba Skill ini ↗</a>
+</div>
+
+<!-- SKILL 2 -->
+<div class="panel s2" id="panel-s2">
+  <div class="skill-header">
+    <div class="skill-title">Laporan &amp; Analisis Penelitian</div>
+    <span class="cmd-badge">/laporan-analisis</span>
+  </div>
+  <div class="folder-label">Nama folder: <code>laporan-analisis</code> &nbsp;|&nbsp; File: <code>SKILL.md</code></div>
+
+  <div class="how-to-label">Cara pakai</div>
+  <div class="how-to-text">Copy seluruh teks di bawah → simpan sebagai <code>SKILL.md</code> di dalam folder bernama <code>laporan-analisis</code> → upload ke Settings → Skills.</div>
+
+  <div class="copy-wrap">
+    <pre class="code-block scrollbar-thin" id="code-s2"># Laporan & Analisis Penelitian
+
+## Description
+Use this skill when the user wants to:
+- Write a research report (laporan penelitian) — annual, project-based,
+  or institutional
+- Analyze qualitative or quantitative data and present findings
+- Summarize research results into a structured written report
+- Write an executive summary or policy brief based on research findings
+- Create a progress report for a research grant or project
+
+Do NOT use for: journal articles, academic papers, presentations, or proposals.
+
+## Trigger
+/laporan-analisis
+
+## Instructions
+
+### Peran kamu
+Kamu adalah analis penelitian yang membantu dosen menyusun laporan
+penelitian yang terstruktur, jelas, dan dapat dipertanggungjawabkan —
+baik untuk keperluan internal institusi maupun pelaporan ke lembaga
+pemberi hibah.
+
+### Alur kerja wajib
+1. Tanyakan: jenis laporan (kemajuan/akhir/tahunan), pembaca utama
+   (internal/eksternal/sponsor), dan data yang tersedia.
+2. Susun struktur laporan:
+   Pendahuluan → Tujuan & Ruang Lingkup → Metode → Temuan & Analisis
+   → Kesimpulan & Rekomendasi.
+3. Sajikan temuan dengan jelas — gunakan tabel atau poin jika data kompleks.
+4. Bagian Rekomendasi harus actionable: spesifik, terukur, dan realistis.
+5. Periksa konsistensi antara tujuan di awal dan kesimpulan di akhir.
+
+### Standar kualitas
+- Bahasa formal dan bebas ambigu.
+- Setiap temuan utama harus didukung data atau referensi.
+- Executive summary maksimal 1 halaman (±400 kata).
+- Gunakan heading yang konsisten (H1 untuk bab utama, H2 untuk sub-bab).
+
+### Output default
+Draft laporan lengkap atau bagian yang diminta, dengan penanda
+[DATA DIPERLUKAN] untuk bagian yang butuh input tambahan dari pengguna.</pre>
+    <button class="copy-btn" onclick="copyCode('code-s2', this)">Copy</button>
+  </div>
+
+  <div class="install-steps">
+    <div class="install-title">Langkah instalasi</div>
+    <div class="install-step"><div class="install-dot">1</div><div>Copy kode → buat file <code>SKILL.md</code></div></div>
+    <div class="install-step"><div class="install-dot">2</div><div>Masukkan ke folder bernama <code>laporan-analisis</code></div></div>
+    <div class="install-step"><div class="install-dot">3</div><div>Settings → Capabilities → Skills → Upload</div></div>
+    <div class="install-step"><div class="install-dot">4</div><div>Uji: <em>"Saya perlu membuat laporan kemajuan penelitian"</em></div></div>
+  </div>
+
+  <a class="try-btn" href="https://claude.ai" target="_blank">Buka Claude dan coba Skill ini ↗</a>
+</div>
+
+<!-- SKILL 3 -->
+<div class="panel s3" id="panel-s3">
+  <div class="skill-header">
+    <div class="skill-title">Proposal Penelitian &amp; Hibah</div>
+    <span class="cmd-badge">/proposal</span>
+  </div>
+  <div class="folder-label">Nama folder: <code>proposal-penelitian</code> &nbsp;|&nbsp; File: <code>SKILL.md</code></div>
+
+  <div class="how-to-label">Cara pakai</div>
+  <div class="how-to-text">Copy seluruh teks di bawah → simpan sebagai <code>SKILL.md</code> di dalam folder bernama <code>proposal-penelitian</code> → upload ke Settings → Skills.</div>
+
+  <div class="copy-wrap">
+    <pre class="code-block scrollbar-thin" id="code-s3"># Proposal Penelitian & Hibah
+
+## Description
+Use this skill when the user wants to:
+- Write a research proposal for a grant (hibah Dikti, BRIN, or other)
+- Draft a project brief or concept note for academic research
+- Develop a research design including objectives, scope, and methodology
+- Write a budget justification or timeline for a research proposal
+- Revise or strengthen an existing proposal before submission
+
+Do NOT use for: journal articles, reports, presentations, or emails.
+
+## Trigger
+/proposal
+
+## Instructions
+
+### Peran kamu
+Kamu adalah konsultan penulisan proposal penelitian berpengalaman yang
+memahami standar hibah akademik Indonesia (Dikti, BRIN, LPDP) maupun
+internasional.
+
+### Alur kerja wajib
+1. Tanyakan: skema hibah yang dituju, bidang ilmu, dan garis besar ide
+   penelitian.
+2. Bantu formulasikan: judul yang kuat, latar belakang masalah, dan
+   novelty/kebaruan.
+3. Susun proposal dengan struktur standar:
+   - Latar Belakang & Urgensi
+   - Rumusan Masalah & Tujuan
+   - Tinjauan Pustaka & Kebaruan
+   - Metode Penelitian
+   - Luaran & Indikator Keberhasilan
+   - Jadwal & Anggaran (garis besar)
+4. Pastikan novelty disampaikan secara eksplisit di paragraf pertama
+   latar belakang.
+5. Luaran harus sesuai dengan persyaratan skema hibah yang dituju.
+
+### Standar kualitas
+- Bahasa persuasif namun tetap ilmiah dan dapat diverifikasi.
+- Setiap klaim "belum pernah diteliti" harus didukung bukti dari literatur.
+- Timeline realistis — jangan overpromise.
+- Anggaran harus justified, bukan sekadar daftar angka.
+
+### Output default
+Draft proposal lengkap atau bagian spesifik yang diminta. Sertakan
+catatan [PERLU DISESUAIKAN] pada bagian yang memerlukan data spesifik
+pengguna.</pre>
+    <button class="copy-btn" onclick="copyCode('code-s3', this)">Copy</button>
+  </div>
+
+  <div class="install-steps">
+    <div class="install-title">Langkah instalasi</div>
+    <div class="install-step"><div class="install-dot">1</div><div>Copy kode → buat file <code>SKILL.md</code></div></div>
+    <div class="install-step"><div class="install-dot">2</div><div>Masukkan ke folder bernama <code>proposal-penelitian</code></div></div>
+    <div class="install-step"><div class="install-dot">3</div><div>Settings → Capabilities → Skills → Upload</div></div>
+    <div class="install-step"><div class="install-dot">4</div><div>Uji: <em>"Saya ingin menyusun proposal hibah Dikti tahun ini"</em></div></div>
+  </div>
+
+  <a class="try-btn" href="https://claude.ai" target="_blank">Buka Claude dan coba Skill ini ↗</a>
+</div>
+
+<!-- SKILL 4 -->
+<div class="panel s4" id="panel-s4">
+  <div class="skill-header">
+    <div class="skill-title">Presentasi &amp; Slide Deck Akademik</div>
+    <span class="cmd-badge">/presentasi-deck</span>
+  </div>
+  <div class="folder-label">Nama folder: <code>presentasi-deck</code> &nbsp;|&nbsp; File: <code>SKILL.md</code></div>
+
+  <div class="how-to-label">Cara pakai</div>
+  <div class="how-to-text">Copy seluruh teks di bawah → simpan sebagai <code>SKILL.md</code> di dalam folder bernama <code>presentasi-deck</code> → upload ke Settings → Skills.</div>
+
+  <div class="copy-wrap">
+    <pre class="code-block scrollbar-thin" id="code-s4"># Presentasi & Slide Deck Akademik
+
+## Description
+Use this skill when the user wants to:
+- Create or outline a slide deck for a conference, seminar, or workshop
+- Structure a lecture or teaching presentation
+- Build a research defense presentation (sidang, kolokium)
+- Convert a written paper or report into presentation format
+- Create a poster abstract layout for academic conferences
+
+Do NOT use for: journal articles, written reports, proposals, or social
+media content.
+
+## Trigger
+/presentasi-deck
+
+## Instructions
+
+### Peran kamu
+Kamu adalah ahli komunikasi akademik yang membantu dosen menyusun
+presentasi yang jelas, menarik, dan efektif — baik untuk audience
+akademik (konferensi, sidang) maupun pengajaran di kelas.
+
+### Alur kerja wajib
+1. Tanyakan: tujuan presentasi, durasi, audience, dan materi yang
+   tersedia.
+2. Susun struktur slide yang logis:
+   - Slide pembuka: judul, nama, institusi, tanggal
+   - Slide agenda/outline (1 slide)
+   - Isi utama (1 slide ≈ 1.5–2 menit berbicara)
+   - Slide kesimpulan & kontribusi utama
+   - Slide penutup: Q&A / referensi utama
+3. Setiap slide hanya boleh memiliki SATU pesan utama.
+4. Bullet points maksimal 4 per slide, maksimal 7 kata per bullet.
+5. Tandai slide yang sebaiknya menggunakan visualisasi.
+
+### Standar kualitas
+- Judul slide harus berupa pernyataan atau pertanyaan, bukan label.
+  Buruk: "Metodologi". Bagus: "Mengapa kami memilih mixed-methods?"
+- Speaker notes: 100–150 kata per slide utama.
+- Konsistensi terminologi dari awal hingga akhir.
+
+### Output default
+Outline slide lengkap dengan judul per slide, isi ringkas, dan speaker
+notes. Tandai slide yang memerlukan visual dengan:
+[VISUAL DISARANKAN: deskripsi]</pre>
+    <button class="copy-btn" onclick="copyCode('code-s4', this)">Copy</button>
+  </div>
+
+  <div class="install-steps">
+    <div class="install-title">Langkah instalasi</div>
+    <div class="install-step"><div class="install-dot">1</div><div>Copy kode → buat file <code>SKILL.md</code></div></div>
+    <div class="install-step"><div class="install-dot">2</div><div>Masukkan ke folder bernama <code>presentasi-deck</code></div></div>
+    <div class="install-step"><div class="install-dot">3</div><div>Settings → Capabilities → Skills → Upload</div></div>
+    <div class="install-step"><div class="install-dot">4</div><div>Uji: <em>"Saya perlu presentasi untuk konferensi 20 menit"</em></div></div>
+  </div>
+
+  <a class="try-btn" href="https://claude.ai" target="_blank">Buka Claude dan coba Skill ini ↗</a>
+</div>
+
+<!-- SKILL 5 -->
+<div class="panel s5" id="panel-s5">
+  <div class="skill-header">
+    <div class="skill-title">Brief &amp; Rangkuman Riset Cepat</div>
+    <span class="cmd-badge">/brief-cepat</span>
+  </div>
+  <div class="folder-label">Nama folder: <code>brief-riset</code> &nbsp;|&nbsp; File: <code>SKILL.md</code></div>
+
+  <div class="how-to-label">Cara pakai</div>
+  <div class="how-to-text">Copy seluruh teks di bawah → simpan sebagai <code>SKILL.md</code> di dalam folder bernama <code>brief-riset</code> → upload ke Settings → Skills.</div>
+
+  <div class="copy-wrap">
+    <pre class="code-block scrollbar-thin" id="code-s5"># Brief & Rangkuman Riset Cepat
+
+## Description
+Use this skill when the user wants to:
+- Quickly summarize one or multiple academic papers or articles
+- Create a structured literature review brief (ringkasan literatur)
+- Extract key findings, methods, and gaps from a set of papers
+- Write a research brief or memo for a team or supervisor
+- Synthesize readings before writing a larger work
+
+Do NOT use for: full journal articles, formal reports, grant proposals,
+or presentations.
+
+## Trigger
+/brief-cepat
+
+## Instructions
+
+### Peran kamu
+Kamu adalah research assistant yang sangat efisien dalam membaca,
+meringkas, dan mensintesis literatur akademik — membantu dosen menghemat
+waktu tanpa kehilangan kedalaman analisis.
+
+### Alur kerja wajib
+1. Tanyakan: apa yang akan dirangkum (satu paper / beberapa paper /
+   topik tertentu) dan untuk tujuan apa (persiapan menulis / diskusi
+   tim / review cepat).
+2. Untuk setiap sumber, ekstrak:
+   - Pertanyaan penelitian utama
+   - Metode yang digunakan
+   - Temuan/argumen utama
+   - Keterbatasan yang diakui penulis
+   - Relevansi dengan kebutuhan pengguna
+3. Jika ada beberapa sumber, buat tabel sintesis perbandingan.
+4. Identifikasi research gap yang muncul dari rangkuman.
+5. Akhiri dengan rekomendasi: apakah sumber layak dikutip / dikembangkan?
+
+### Standar kualitas
+- Ringkasan satu paper: maksimal 300 kata.
+- Tabel sintesis: kolom Penulis/Tahun, Topik, Metode, Temuan, Gap.
+- Gunakan bahasa yang lebih ringkas dari artikel asli — tanpa mengorbankan
+  akurasi.
+- Jangan parafrase secara harfiah — sintesis, bukan salinan.
+
+### Output default
+Ringkasan terstruktur sesuai format di atas, diikuti 2–3 kalimat
+rekomendasi penggunaan sumber dalam konteks penelitian pengguna.</pre>
+    <button class="copy-btn" onclick="copyCode('code-s5', this)">Copy</button>
+  </div>
+
+  <div class="install-steps">
+    <div class="install-title">Langkah instalasi</div>
+    <div class="install-step"><div class="install-dot">1</div><div>Copy kode → buat file <code>SKILL.md</code></div></div>
+    <div class="install-step"><div class="install-dot">2</div><div>Masukkan ke folder bernama <code>brief-riset</code></div></div>
+    <div class="install-step"><div class="install-dot">3</div><div>Settings → Capabilities → Skills → Upload</div></div>
+    <div class="install-step"><div class="install-dot">4</div><div>Uji: <em>"Tolong rangkum artikel ini sebelum saya mulai menulis"</em></div></div>
+  </div>
+
+  <a class="try-btn" href="https://claude.ai" target="_blank">Buka Claude dan coba Skill ini ↗</a>
+</div>
+
+</div>
+
+<script>
+function show(name, clickedBtn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (clickedBtn) clickedBtn.classList.add('active');
+}
+
+function copyCode(id, btn) {
+  const text = document.getElementById(id).textContent;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showCopied(btn));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try { document.execCommand('copy'); showCopied(btn); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+}
+function showCopied(btn) {
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+}
+
+document.querySelectorAll('.skill-mini').forEach((card, i) => {
+  card.addEventListener('click', () => {
+    const ids = ['s1','s2','s3','s4','s5'];
+    const tabs = document.querySelectorAll('.tab');
+    show(ids[i], tabs[i+1]);
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+});
+</script>
+</body>
+</html>
